@@ -104,7 +104,9 @@ class Devise::InvitationsController < DeviseController
 
   def resource_from_invitation_token
     #unless params[:invitation_token] && self.resource = resource_class.find_by_invitation_token(params[:invitation_token], true)
-    unless params[:invitation_token] && Invite.find_by_token(params[:invitation_token])
+    if params[:invitation_token] && invite = Invite.find_by_token(params[:invitation_token])
+      resource = User.find_by_email(invite.email)
+    else
       set_flash_message(:alert, :invitation_token_invalid) if is_flashing_format?
       redirect_to after_sign_out_path_for(resource_name)
     end
